@@ -25,7 +25,7 @@ unmuteButton.addEventListener('click', function()
       };
     navigator.geolocation.watchPosition(receivePosition, receivePositionError, options);
     
-    getAccel();
+    // getAccel();
     
     Tone.start();
     const player = new Tone.Player("https://raw.githubusercontent.com/simonhill-fr/asset/master/pad.wav").connect(filter);
