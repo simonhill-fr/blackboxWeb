@@ -3,9 +3,11 @@ import Vector3d from 'https://cdn.jsdelivr.net/npm/geodesy@2/vector3d.js';
 
 
 unmuteButton.addEventListener('click', function () {
+  document.getElementById('unmuteButton').remove();
   watchGPS();
   getCompass();
   startAudio();
+  document.body.style.backgroundColor = "red";
 });
 
 
@@ -93,7 +95,7 @@ function receiveCompass(event) {
 
 function receivePosition(position) {
   if (fenceA.inside(position.coords.latitude, position.coords.longitude)){
-    document.getElementById("aim").innerHTML = "Match: TRUE";
+    document.getElementById("match").innerHTML = "Match: TRUE";
   }
 
   const p = new LatLon(position.coords.latitude, position.coords.longitude);
@@ -133,21 +135,33 @@ function startAudio() {
 
 function audioFilter(aim) {
   filter.frequency.value = linearToLogarithmic(aim, 150, 20000);
-  // console.log(filter.frequency.value);
+  
+  let brightness = scale(aim, 0, 1, -0.8, 0)
+  console.log(brightness);
+  var color = shadeHexColor('#FF0000', brightness);
+  document.body.style.backgroundColor = color;
 }
 
 function audioPan(angle) {
-  
-  // var pan = scale(angle, 0, 360, -90, 90);
   var pan = Math.sin(angle * -1);
   pan = scale(pan, -1, 1, -0.6, 0.6);
-  console.log(pan);
+  // console.log(pan);
   panner.pan.value = pan;
 }
 
+function playCue()
+{
+  const player = new Tone.Player("https://raw.githubusercontent.com/simonhill-fr/asset/master/katerine-pour-toi.wav").connect(filter);
+  player.start();
+}
 // =============================================================================
 // HELPERS
 // =============================================================================
+
+function shadeHexColor(color, percent) {
+  var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
+  return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
+}
 
 function scale(num, in_min, in_max, out_min, out_max) {
   return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;

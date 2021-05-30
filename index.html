@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script> -->
     <script type='module' src="geolocation.js"></script>
@@ -13,10 +14,10 @@
   <body>
     <div>
       <button id="unmuteButton"> Démarrer </button>
-      <h1 id="aim">Aim:</h1>
-      <h1 id="match">Match:</h1>
-      <h1 id="azimuth">Azimuth:</h1>
-      <h1 id="distance">Distance:</h1>
+      <h1 hidden id="aim">Aim:</h1>
+      <h1 hidden id="match">Match:</h1>
+      <h1 hidden id="azimuth">Azimuth:</h1>
+      <h1 hidden id="distance">Distance:</h1>
     </div>
     
   </body>
