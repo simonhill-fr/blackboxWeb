@@ -4,6 +4,10 @@ import Vector3d from 'https://cdn.jsdelivr.net/npm/geodesy@2/vector3d.js';
 
 unmuteButton.addEventListener('click', function () {
   document.getElementById('unmuteButton').remove();
+
+  // setNextWaypoint();
+  // setNextCuepoint();
+
   watchGPS();
   getCompass();
   startAudio();
@@ -17,10 +21,38 @@ unmuteButton.addEventListener('click', function () {
 // GEOLOC
 // =============================================================================
 
-const target = {
-  latitude: 48.89353893327512,
-  longitude: 2.3243825143093972
-};
+var waypointIdx = 0;
+var cuepointIdx = 0;
+
+const waypoints = [
+  {
+    latitude: 1.1,
+    longitude: 2.2
+  },
+  {
+    latitude: 3.3,
+    longitude: 4.4
+  },
+  {
+    latitude: 5.5,
+    longitude: 6.6
+  },
+  {
+    latitude: 7.7,
+    longitude: 8.8
+  }
+];
+
+const cuepoints = [
+  {
+    latitude: 11.11,
+    longitude: 12.12
+  },
+  {
+    latitude: 13.13,
+    longitude: 14.14
+  }
+];
 
 var originVector = new Vector3d(0, 1, 0);
 var targetVector = new Vector3d(0, 0, 0);
@@ -41,10 +73,17 @@ class CircularGeofenceRegion {
   }
 }
 
-const fenceA = new CircularGeofenceRegion({
-  name: 'myfence',
-  latitude: 48.89353893327512,
-  longitude: 2.3243825143093972,
+const waypointFence = new CircularGeofenceRegion({
+  name: 'waypoint fence',
+  latitude: 0,
+  longitude: 0,
+  radius: 10 // meters
+});
+
+const cuepointFence = new CircularGeofenceRegion({
+  name: 'cuepoint fence',
+  latitude: 0,
+  longitude: 0,
   radius: 10 // meters
 });
 
@@ -59,7 +98,6 @@ function watchGPS() {
 
 function getCompass() {
   DeviceMotionEvent.requestPermission().then(response => {
-    console.log(response);
     if (response == 'granted') {
       // Add a listener to get smartphone orientation 
       window.addEventListener('deviceorientation', receiveCompass);
@@ -67,39 +105,44 @@ function getCompass() {
   });
 }
 
-function receiveCompass(event) {
-  var compass = event.webkitCompassHeading;
 
+// ==============================================================================================================
+function receiveCompass(event) {
+  
+  var compass = event.webkitCompassHeading;
   let rotatedTargetVector = targetVector.rotateAround(new Vector3d(0, 0, 1), compass).times(targetVector.length);
-  // console.log("rotated:" + rotatedTargetVector.x + " " + rotatedTargetVector.y + " " + rotatedTargetVector.z);
 
   // get aim
   var radians = originVector.angleTo(rotatedTargetVector);
   var degrees = radians * 180 / Math.PI;
   var aim = scale(degrees, 180, 0, 0, 1);
-  document.getElementById("aim").innerHTML = "Aim:" + aim;
-  // console.log("aim:" + aim);
+  document.getElementById("aim").innerHTML = "Aim:" + aim.toFixed(2);
 
-  // // get angle
+  // get angle
   var radians = originVector.angleTo(rotatedTargetVector, new Vector3d(0, 0, 1));
   if (radians < 0) {
     radians += 2 * Math.PI;
   }
   var degrees = radians * 180 / Math.PI;
-  document.getElementById("azimuth").innerHTML = "Azimuth:" + degrees;
-  // console.log("angle:" + degrees);
+  document.getElementById("azimuth").innerHTML = "Azimuth:" + degrees.toFixed(2);
 
   audioFilter(aim);
   audioPan(radians);
 }
 
 function receivePosition(position) {
-  if (fenceA.inside(position.coords.latitude, position.coords.longitude)){
+  
+  if (waypointFence.inside(position.coords.latitude, position.coords.longitude)){
+    setNextWaypoint();
+  }
+  
+  if (cuepointFence.inside(position.coords.latitude, position.coords.longitude)){
     document.getElementById("match").innerHTML = "Match: TRUE";
   }
 
+
   const p = new LatLon(position.coords.latitude, position.coords.longitude);
-  const t = new LatLon(target.latitude, target.longitude);
+  const t = new LatLon(waypoints[waypointIdx].latitude, waypoints[waypointIdx].longitude);
 
   const pUtm = p.toUtm();
   const tUtm = t.toUtm();
@@ -115,7 +158,23 @@ function receivePositionError(err) {
   console.warn('ERROR(' + err.code + '): ' + err.message);
 }
 
+function setNextWaypoint(){
+  if (waypointIdx < waypoints.length) {
+    waypointIdx++;
+    waypointFence.latitude = waypoints[waypointIdx].latitude;
+    waypointFence.longitude = waypoints[waypointIdx].longitude;
+  }
+  document.getElementById("waypoint").innerHTML = "Waypoint:" + waypointIdx;
+  console.log("setNextWaypoint! Idx:" + waypointIdx + " lat:" + waypointFence.latitude + " long:" + waypointFence.longitude);
+}
 
+function setNextCuepoint(){
+  if (cuepointIdx < cuepoints.length) {
+    cuepointIdx++;
+    cuepointFence.latitude = cuepoints[cuepointIdx].latitude;
+    cuepointFence.longitude = cuepoints[cuepointIdx].longitude;
+  }
+}
 
 // =============================================================================
 // AUDIO
@@ -137,7 +196,6 @@ function audioFilter(aim) {
   filter.frequency.value = linearToLogarithmic(aim, 150, 20000);
   
   let brightness = scale(aim, 0, 1, -0.8, 0)
-  console.log(brightness);
   var color = shadeHexColor('#FF0000', brightness);
   document.body.style.backgroundColor = color;
 }
