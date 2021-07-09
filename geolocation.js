@@ -132,6 +132,10 @@ function receiveCompass(event) {
 
 function receivePosition(position) {
   
+  let accuracy = position.coords.accuracy;
+  document.getElementById("accuracy").innerHTML = "Accuracy:" + accuracy;
+
+
   if (waypointFence.inside(position.coords.latitude, position.coords.longitude)){
     document.getElementById("waymatch").innerHTML = "Match: True";
     setNextWaypoint();
@@ -146,7 +150,6 @@ function receivePosition(position) {
   }
 
   document.getElementById("waypoint").innerHTML = "Waypoint:" + waypointIdx;
-
 
   const p = new LatLon(position.coords.latitude, position.coords.longitude);
   const t = new LatLon(waypoints[waypointIdx].latitude, waypoints[waypointIdx].longitude);
