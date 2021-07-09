@@ -140,6 +140,8 @@ function receivePosition(position) {
     document.getElementById("match").innerHTML = "Match: TRUE";
   }
 
+  document.getElementById("waypoint").innerHTML = "Waypoint:" + waypointIdx + " lat:" + waypoints[waypointIdx].latitude;
+
 
   const p = new LatLon(position.coords.latitude, position.coords.longitude);
   const t = new LatLon(waypoints[waypointIdx].latitude, waypoints[waypointIdx].longitude);
