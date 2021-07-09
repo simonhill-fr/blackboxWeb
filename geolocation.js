@@ -5,7 +5,7 @@ import Vector3d from 'https://cdn.jsdelivr.net/npm/geodesy@2/vector3d.js';
 unmuteButton.addEventListener('click', function () {
   document.getElementById('unmuteButton').remove();
 
-  // setNextWaypoint();
+  setNextWaypoint();
   // setNextCuepoint();
 
   watchGPS();
@@ -21,8 +21,8 @@ unmuteButton.addEventListener('click', function () {
 // GEOLOC
 // =============================================================================
 
-var waypointIdx = 0;
-var cuepointIdx = 0;
+var waypointIdx = -1;
+var cuepointIdx = -1;
 
 const waypoints = [
   {
@@ -133,14 +133,19 @@ function receiveCompass(event) {
 function receivePosition(position) {
   
   if (waypointFence.inside(position.coords.latitude, position.coords.longitude)){
+    document.getElementById("waymatch").innerHTML = "Match: True";
     setNextWaypoint();
+  } else {
+    document.getElementById("waymatch").innerHTML = "Match: False";
   }
   
   if (cuepointFence.inside(position.coords.latitude, position.coords.longitude)){
-    document.getElementById("match").innerHTML = "Match: TRUE";
+    document.getElementById("cuematch").innerHTML = "Match: True";
+  } else {
+    document.getElementById("cuematch").innerHTML = "Match: False";
   }
 
-  document.getElementById("waypoint").innerHTML = "Waypoint:" + waypointIdx + " lat:" + waypoints[waypointIdx].latitude;
+  document.getElementById("waypoint").innerHTML = "Waypoint:" + waypointIdx;
 
 
   const p = new LatLon(position.coords.latitude, position.coords.longitude);
