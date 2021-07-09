@@ -26,20 +26,20 @@ var cuepointIdx = 0;
 
 const waypoints = [
   {
-    latitude: 1.1,
-    longitude: 2.2
+    latitude: 48.89450765151001,
+    longitude: 2.3218926474015618
   },
   {
-    latitude: 3.3,
-    longitude: 4.4
+    latitude: 48.89588697553153, 
+    longitude: 2.323020786869134
   },
   {
-    latitude: 5.5,
-    longitude: 6.6
+    latitude: 48.89586710605865,
+    longitude: 2.323685561777184
   },
   {
-    latitude: 7.7,
-    longitude: 8.8
+    latitude: 48.89428190739545,
+    longitude: 2.3225372089108327
   }
 ];
 
