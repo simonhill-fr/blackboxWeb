@@ -1,5 +1,6 @@
 import Utm, { LatLon, Dms } from 'https://cdn.jsdelivr.net/npm/geodesy@2.2.1/utm.js';
 import Vector3d from 'https://cdn.jsdelivr.net/npm/geodesy@2/vector3d.js';
+import LatLon_spherical from 'https://cdn.jsdelivr.net/npm/geodesy@2/latlon-spherical.js';
 
 
 unmuteButton.addEventListener('click', function () {
@@ -153,6 +154,10 @@ function receivePosition(position) {
 
   const p = new LatLon(position.coords.latitude, position.coords.longitude);
   const t = new LatLon(waypoints[waypointIdx].latitude, waypoints[waypointIdx].longitude);
+
+  let p_spherical = new LatLon_spherical(position.coords.latitude, position.coords.longitude);
+  let distance = p_spherical.distanceTo(new LatLon_spherical(waypoints[waypointIdx].latitude, waypoints[waypointIdx].longitude))
+  document.getElementById("distance").innerHTML = "Distance:" + distance.toFixed(2);
 
   const pUtm = p.toUtm();
   const tUtm = t.toUtm();
