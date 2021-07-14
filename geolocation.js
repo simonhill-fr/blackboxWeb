@@ -25,6 +25,10 @@ unmuteButton.addEventListener('click', function () {
 var waypointIdx = -1;
 var cuepointIdx = -1;
 
+var waypointFenceTimeStart = 0;
+
+const WAYPOINT_DIST_THRESH = 10;
+
 const waypoints = [
   {
     latitude: 48.89450765151001,
@@ -137,18 +141,19 @@ function receivePosition(position) {
   document.getElementById("accuracy").innerHTML = "Accuracy:" + accuracy;
 
 
-  if (waypointFence.inside(position.coords.latitude, position.coords.longitude)){
-    document.getElementById("waymatch").innerHTML = "Match: True";
-    setNextWaypoint();
-  } else {
-    document.getElementById("waymatch").innerHTML = "Match: False";
-  }
+  // if (waypointFence.inside(position.coords.latitude, position.coords.longitude)){
+  //   document.getElementById("waymatch").innerHTML = "Match: True";
+  //   setNextWaypoint();
+  // } else {
+  //   document.getElementById("waymatch").innerHTML = "Match: False";
+  // }
+
   
-  if (cuepointFence.inside(position.coords.latitude, position.coords.longitude)){
-    document.getElementById("cuematch").innerHTML = "Match: True";
-  } else {
-    document.getElementById("cuematch").innerHTML = "Match: False";
-  }
+  // if (cuepointFence.inside(position.coords.latitude, position.coords.longitude)){
+  //   document.getElementById("cuematch").innerHTML = "Match: True";
+  // } else {
+  //   document.getElementById("cuematch").innerHTML = "Match: False";
+  // }
 
   document.getElementById("waypoint").innerHTML = "Waypoint:" + waypointIdx;
 
@@ -167,6 +172,14 @@ function receivePosition(position) {
 
   targetVector.x = x;
   targetVector.y = y;
+
+  if (distance <= WAYPOINT_DIST_THRESH)
+  {
+    document.getElementById("waymatch").innerHTML = "Match: True";
+    setNextWaypoint();
+  } else {
+    document.getElementById("waymatch").innerHTML = "Match: False";
+  }
 }
 
 function receivePositionError(err) {
